@@ -29,11 +29,39 @@ router.post('/signup', function (req, res) {
         if (req.body.password.length < 8) {
 
             response.error = true;
-            response.status = "Password must not be less than";
+            response.status = "password must not be less than 8 characters";
             res.end(JSON.stringify(response));
             return;
 
         }
+
+        //Username should be atleast 5 characters
+        if (req.body.username.length < 5) {
+
+            response.error = true;
+            response.status = "username must not be less than 4 characters";
+            res.end(JSON.stringify(response));
+            return;
+
+        }
+
+        //Passwords must not contain spaces
+        if (/\s/.test(req.body.password)) {
+            response.error = true;
+            response.status = "password must not contain spaces";
+            res.end(JSON.stringify(response));
+            return;
+        }
+
+
+        //Username must not contain spaces
+        if (/\s/.test(req.body.username)) {
+            response.error = true;
+            response.status = "username must not contain spaces";
+            res.end(JSON.stringify(response));
+            return;
+        }
+
 
         //Check for email validation
         if (!validator.isEmail(req.body.email)) {
@@ -52,6 +80,14 @@ router.post('/signup', function (req, res) {
             return;
         }
 
+        //username must be small letters
+        if (/[A-Z]/.test(req.body.username)) {
+            response.error = true;
+            response.status = "username cannot contain capital letter";
+            res.end(JSON.stringify(response));
+            return;
+        }
+
 
 
         bcrypt.hash(req.body.password, null, null, function (err, hashed) {
@@ -59,32 +95,34 @@ router.post('/signup', function (req, res) {
             //Make a new node
             var _password = hashed;
 
-            db.cypher({
-                query: "CREATE (n:User { username : {username}, password: {password}, email: {email},sex: {sex}}) RETURN n",
-                params: {
-                    username: req.body.username,
-                    password: _password,
-                    sex: req.body.sex,
-                    email: req.body.email
-                }
-            }, function (err, results) {
+            /* db.cypher({
+                 query: "CREATE (n:User { username : {username}, password: {password}, email: {email},sex: {sex}}) RETURN n",
+                 params: {
+                     username: req.body.username,
+                     password: _password,
+                     sex: req.body.sex,
+                     email: req.body.email
+                 }
+             }, function (err, results) {
 
-                if (err) {
-                    response.error = true;
-                    response.status = err.neo4j.message;
-                    res.end(JSON.stringify(response));
-                    return;
-                } else {
+                 if (err) {
+                     response.error = true;
+                     response.status = err.neo4j.message;
+                     res.end(JSON.stringify(response));
+                     return;
+                 } else {
 
-                    response.error = false;
-                    response.status = results;
-                    res.end(JSON.stringify(response));
-
-
-                }
+                     response.error = false;
+                     response.status = results;
+                     res.end(JSON.stringify(response));
 
 
-            });
+                 }
+
+
+             });*/
+
+            res.end("all cool");
 
         });
 
