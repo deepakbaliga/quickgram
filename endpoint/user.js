@@ -141,7 +141,7 @@ router.post('/signup', function (req, res) {
 
 
 /*
-    Param : username, password, email, sex
+    Param : username, password
 */
 router.post('/login', function (req, res) {
 
@@ -156,7 +156,7 @@ router.post('/login', function (req, res) {
 
 
         db.cypher({
-            query: "MATCH (n:User) where n.username = {username} RETURN n.password",
+            query: "MATCH (n:User) where n.username = {username} RETURN id(n), n.password",
             params: {
                 username: req.body.username
             }
@@ -164,17 +164,18 @@ router.post('/login', function (req, res) {
             if (!err && result.length > 0) {
 
 
-                bcrypt.compare(req.body.password, result[0]['n.password'], function (err, result) {
-                    if (!err && result) {
+
+                bcrypt.compare(req.body.password, result[0]['n.password'], function (err, _result) {
+                    if (!err && _result) {
 
                         response.error = false;
+                        response.id = result[0]['id(n)'];
                         response.status = "Login success";
-                        res.end(JSON.stringify(response));
 
+                        res.end(JSON.stringify(response));
                         return;
 
                     } else {
-
 
                         response.error = true;
                         response.status = "Password mismatch";
@@ -192,11 +193,6 @@ router.post('/login', function (req, res) {
         });
 
 
-
-
-
-
-
     } else {
         response.error = true;
         response.status = "Missing fields";
@@ -208,5 +204,7 @@ router.post('/login', function (req, res) {
     }
 
 });
+
+
 
 module.exports = router;
