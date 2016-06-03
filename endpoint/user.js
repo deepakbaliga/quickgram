@@ -95,34 +95,34 @@ router.post('/signup', function (req, res) {
             //Make a new node
             var _password = hashed;
 
-            /* db.cypher({
-                 query: "CREATE (n:User { username : {username}, password: {password}, email: {email},sex: {sex}}) RETURN n",
-                 params: {
-                     username: req.body.username,
-                     password: _password,
-                     sex: req.body.sex,
-                     email: req.body.email
-                 }
-             }, function (err, results) {
+            db.cypher({
+                query: "CREATE (n:User { username : {username}, password: {password}, email: {email},sex: {sex}}) RETURN n",
+                params: {
+                    username: req.body.username,
+                    password: _password,
+                    sex: req.body.sex,
+                    email: req.body.email
+                }
+            }, function (err, results) {
 
-                 if (err) {
-                     response.error = true;
-                     response.status = err.neo4j.message;
-                     res.end(JSON.stringify(response));
-                     return;
-                 } else {
+                if (err) {
+                    response.error = true;
+                    response.status = err.neo4j.message;
+                    res.end(JSON.stringify(response));
+                    return;
+                } else {
 
-                     response.error = false;
-                     response.status = results;
-                     res.end(JSON.stringify(response));
-
-
-                 }
+                    response.error = false;
+                    response.status = results;
+                    res.end(JSON.stringify(response));
 
 
-             });*/
+                }
 
-            res.end("all cool");
+
+            });
+
+
 
         });
 
@@ -138,5 +138,75 @@ router.post('/signup', function (req, res) {
 
 });
 
+
+
+/*
+    Param : username, password, email, sex
+*/
+router.post('/login', function (req, res) {
+
+    var response = {};
+
+    if (req.body.username && req.body.password) {
+
+        //Trim spaces before and after
+        req.body.username = req.body.username.trim();
+        req.body.password = req.body.password.trim();
+
+
+
+        db.cypher({
+            query: "MATCH (n:User) where n.username = {username} RETURN n.password",
+            params: {
+                username: req.body.username
+            }
+        }, function (err, result) {
+            if (!err && result.length > 0) {
+
+
+                bcrypt.compare(req.body.password, result[0]['n.password'], function (err, result) {
+                    if (!err && result) {
+
+                        response.error = false;
+                        response.status = "Login success";
+                        res.end(JSON.stringify(response));
+
+                        return;
+
+                    } else {
+
+
+                        response.error = true;
+                        response.status = "Password mismatch";
+                        res.end(JSON.stringify(response));
+                        return;
+                    }
+                });
+
+            } else {
+                response.error = true;
+                response.status = "User doesnt exist. Please signup";
+                res.end(JSON.stringify(response));
+                return;
+            }
+        });
+
+
+
+
+
+
+
+    } else {
+        response.error = true;
+        response.status = "Missing fields";
+
+        res.end(JSON.stringify(response));
+        return;
+
+
+    }
+
+});
 
 module.exports = router;
