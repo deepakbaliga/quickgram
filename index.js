@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.use('/user', require('./endpoint/user'));
+app.use('/posts', require('./endpoint/post'));
 
 
 app.listen(app.get('port'));
