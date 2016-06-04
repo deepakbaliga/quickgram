@@ -6,13 +6,15 @@ var hash = bcrypt.hashSync("goddamnhash");
 var validator = require('validator');
 var db = require('../database');
 var shortid = require('shortid');
+var accesskey = require('../config').accesskey;
+var secret = require('../config').secret;
 
 var AWS = require('aws-sdk');
 
 
 AWS.config.update({
-    accessKeyId: "AKIAIH5GN7DCFIVRAADA",
-    secretAccessKey: "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"
+    accessKeyId: accesskey,
+    secretAccessKey: secret
 });
 
 AWS.config.update({
@@ -25,13 +27,16 @@ var s3 = new AWS.S3();
 
 
 
-router.get('/getuploadurl', function (req, res) {
+router.get('/uploadurl', function (req, res) {
 
     var urlParams = {
         Bucket: 'quickgrampost',
-        Key: shortid.generate() + shortid.generate()
+        Key: shortid.generate() + shortid.generate() + '.jpg',
+        Expires: 3600
+
+
     };
-    s3.getSignedUrl('getObject', urlParams, function (err, url) {
+    s3.getSignedUrl('putObject', urlParams, function (err, url) {
         if (!err) {
             res.end(url);
         } else {

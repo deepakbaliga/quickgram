@@ -20,3 +20,7 @@ app.use('/posts', require('./endpoint/post'));
 
 
 app.listen(app.get('port'));
+
+process.on('SIGINT', function () {
+    process.exit();
+});
