@@ -17,6 +17,8 @@ app.use(bodyParser.json());
 
 app.use('/user', require('./endpoint/user'));
 app.use('/posts', require('./endpoint/post'));
+app.use('/utility', require('./endpoint/utility'));
+
 
 
 app.listen(app.get('port'));

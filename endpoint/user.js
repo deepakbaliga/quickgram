@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 var bcrypt = require('bcrypt-nodejs');
-var hash = bcrypt.hashSync("goddamnhash");
+var hash = bcrypt.hashSync(require('../config').password_hash);
 var validator = require('validator');
 
 var db = require('../database');

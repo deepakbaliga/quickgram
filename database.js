@@ -1,6 +1,7 @@
+var database_url = require('./config').database_url;
 var neo4j = require('neo4j');
 
-var db = new neo4j.GraphDatabase('http://neo4j:janaganamana@localhost:7474');
+var db = new neo4j.GraphDatabase(database_url);
 
 
 //make email  unique
